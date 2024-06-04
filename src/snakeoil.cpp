@@ -72,7 +72,10 @@ static retStruct work(std::string const &filename, bool modify)
 		else
 			retVal.baseaddress = PE.FileHeader->OptionalHeader.ImageBase;
 #else
-		retVal.baseaddress = PE.FileHeader->OptionalHeader.ImageBase;
+		if (PE.FileHeader->FileHeader.Machine != IMAGE_FILE_MACHINE_I386)
+			retVal.baseaddress = reinterpret_cast<IMAGE_OPTIONAL_HEADER64*>(&PE.FileHeader->OptionalHeader)->ImageBase;
+		else
+			retVal.baseaddress = PE.FileHeader->OptionalHeader.ImageBase;
 #endif
 		retVal.dep = !! (PE.FileHeader->OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NX_COMPAT);
 		retVal.intg = !! (PE.FileHeader->OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_FORCE_INTEGRITY);	
